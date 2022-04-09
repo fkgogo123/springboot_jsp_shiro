@@ -9,7 +9,15 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>系统主页</h1>
+    <h1>系统主页</h1><br/>
+    <h1>欢迎回来 <shiro:principal/> 酱~</h1>
+    <shiro:authenticated>
+        认证之后展示的内容<br>
+    </shiro:authenticated>
+    <shiro:notAuthenticated>
+        不需要认证就能展示的内容<br>
+    </shiro:notAuthenticated>
+
     <a href="${pageContext.request.contextPath}/user/logout">退出登录</a>
     <ul>
         <shiro:hasAnyRoles name="user, admin">

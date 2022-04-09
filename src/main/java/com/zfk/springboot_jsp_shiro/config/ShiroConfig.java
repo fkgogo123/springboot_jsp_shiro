@@ -1,5 +1,6 @@
 package com.zfk.springboot_jsp_shiro.config;
 
+import com.zfk.springboot_jsp_shiro.shiro.cache.RedisCacheManager;
 import com.zfk.springboot_jsp_shiro.shiro.realms.CustomerRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.realm.Realm;
@@ -29,6 +30,10 @@ public class ShiroConfig {
         map.put("/user/login", "anon"); // 允许匿名访问（公共资源）
         map.put("/user/register", "anon"); // 允许匿名访问（公共资源）
         map.put("/register.jsp", "anon"); // 允许匿名访问（公共资源）
+        map.put("/user/getImage", "anon"); // 允许匿名访问（公共资源）获取验证码
+
+        map.put("/index.jsp", "anon"); // 允许匿名访问（公共资源）
+
         map.put("/**", "authc");  // "authc" 请求这个资源需要认证和授权. 实际是个过滤器，既要认证又要授权
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
         // 如果不写认证路径。访问受限资源时shiro默认 重定向 到login页面
@@ -56,8 +61,17 @@ public class ShiroConfig {
         credentialsMatcher.setHashAlgorithmName("MD5");
         // 设置散列次数
         credentialsMatcher.setHashIterations(1024);
-
         customerRealm.setCredentialsMatcher(credentialsMatcher);
+
+        // 开启缓存管理
+        // 继承关系：customerRealm --> AuthorizingRealm --> AuthenticatingRealm --> CachingRealm
+        // customerRealm.setCacheManager(new EhCacheManager()); //这是本地缓存，可以使用redis等实现分布式缓存
+        customerRealm.setCacheManager(new RedisCacheManager());
+        customerRealm.setCachingEnabled(true); // 开启全局缓存
+        customerRealm.setAuthenticationCachingEnabled(true); // 开启认证缓存
+        customerRealm.setAuthenticationCacheName("authenticationCache"); // 可选，设置缓存名字
+        customerRealm.setAuthorizationCachingEnabled(true); // 开启授权缓存
+        customerRealm.setAuthorizationCacheName("authorizationCache");
 
         return customerRealm;
     }

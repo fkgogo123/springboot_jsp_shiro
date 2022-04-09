@@ -1,6 +1,7 @@
 package com.zfk.springboot_jsp_shiro.shiro.realms;
 
 import com.zfk.springboot_jsp_shiro.entity.User;
+import com.zfk.springboot_jsp_shiro.shiro.salt.MyByteSource;
 import com.zfk.springboot_jsp_shiro.service.UserService;
 import com.zfk.springboot_jsp_shiro.utils.ApplicationContextUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -11,7 +12,6 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.util.ByteSource;
 import org.apache.shiro.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -55,7 +55,8 @@ public class CustomerRealm extends AuthorizingRealm {
         if (!ObjectUtils.isEmpty(user)){
             // 根据返回数据库中的对象， 密码的认证交给shiro去做。需要重写shiro的密码匹配器。在realm中set匹配器。
             // 数据库中的盐要通过工具类来获取
-            return new SimpleAuthenticationInfo(user.getUsername(), user.getPassword(), ByteSource.Util.bytes(user.getSalt()), this.getName());
+            // return new SimpleAuthenticationInfo(user.getUsername(), user.getPassword(), ByteSource.Util.bytes(user.getSalt()), this.getName());
+            return new SimpleAuthenticationInfo(user.getUsername(), user.getPassword(), new MyByteSource(user.getSalt()), this.getName());
         }
         return null;
     }
